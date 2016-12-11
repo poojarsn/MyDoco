@@ -1,0 +1,76 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MySite.Master.cs" Inherits="MyDoco.MySite" %>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        .treeNode {
+            color: blue;
+            font: 14px Arial, Sans-Serif;
+        }
+
+        .rootNode {
+            font-size: 18px;
+            width: 100%;
+            border-bottom: Solid 1px black;
+        }
+
+        .leafNode {
+            border: Dotted 2px black;
+            padding: 4px;
+            background-color: #eeeeee;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="container">
+                    <div class="jumbotron">
+                        <h1>Content Item Browser</h1>
+                        <p>
+                            This is in pilot phase. Still you can browser, review , view specificatin. Quick lookup to browse item details.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="container">
+                    <h3>Content Tree</h3>
+                    <div class="panel panel-default" style="width:250px">
+                        <div class="panel-heading">Home</div>
+                        <div class="panel-body">
+
+                            <asp:TreeView ID="uxTreeView" runat="server"
+                                OnSelectedNodeChanged="uxTreeView_SelectedNodeChanged"
+                                ExpandDepth="0" ImageSet="Simple" NodeIndent="10" Width="225px">
+                                <ParentNodeStyle Font-Bold="False" />
+                                <HoverNodeStyle Font-Underline="True" ForeColor="#DD5555" />
+                                <SelectedNodeStyle Font-Underline="True" ForeColor="#DD5555" HorizontalPadding="0px"
+                                    VerticalPadding="0px" />
+                                <NodeStyle Font-Names="Verdana" Font-Size="10pt" ForeColor="Black" HorizontalPadding="0px"
+                                    NodeSpacing="3px" VerticalPadding="0px" />
+                            </asp:TreeView>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
