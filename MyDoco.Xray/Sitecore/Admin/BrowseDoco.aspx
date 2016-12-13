@@ -1,10 +1,15 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Sitecore/Admin/MySite.Master" AutoEventWireup="true" CodeBehind="BrowseDoco.aspx.cs" Inherits="MyDoco.BrowseDoco" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
     <div id="Main">
         <div class="row">
             <div class="col-md-10">
                 <div class="container">
+                    <button class="btn-primary" type="button" id="generatePdf" >Generate PDF</button>
+                    <div class="alert alert-info">
+                        <label runat="server" id="lblError">Surf Now!</label>
+                    </div>
                     <h2>Item :
                     <asp:Label ID="lblHeading" runat="server" Text="Label"></asp:Label></h2>
                     <div class="panel panel-default">
@@ -32,7 +37,34 @@
         <div class="row">
             <div class="col-md-10">
                 <div class="container">
-                    <h2>Fields Details</h2>
+                    <h2>Table of content</h2>
+                    <ol>
+                        <li>Item Fields</li>
+
+                        <li>Layouts</li>
+
+                        <li>Renderings</li>
+                        <ul>
+                            <asp:PlaceHolder ID="phRenderings" runat="server"></asp:PlaceHolder>
+                        </ul>
+
+                        <li>Data Template</li>
+
+                        <li>Standard Values</li>
+
+                        <li>Base Template</li>
+                        <ul>
+                            <asp:PlaceHolder ID="phBaseTemplate" runat="server"></asp:PlaceHolder>
+                        </ul>
+                        <li>Base Template Fields</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="container">
+                    <h2>Item Fields</h2>
                     <p>An item is made up of fields and field sections. For e.g field can be single, rich text or multi text and so on</p>
                     <asp:Table ID="tblFields" runat="server" CssClass="table table-bordered">
                         <asp:TableHeaderRow>

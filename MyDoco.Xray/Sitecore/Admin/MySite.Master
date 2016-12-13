@@ -116,7 +116,7 @@
                 </div>
             </div>
             <div class="col-md-10">
-                <input type="button" id="generatePdf" name="Generate PDF" value="Generate PDF" />
+ 
                 <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
                 </asp:ContentPlaceHolder>
             </div>

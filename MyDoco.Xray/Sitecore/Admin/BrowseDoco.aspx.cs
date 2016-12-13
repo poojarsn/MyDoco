@@ -8,100 +8,128 @@ using Sitecore.Layouts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace MyDoco
 {
     public partial class BrowseDoco : System.Web.UI.Page
     {
+        
         protected void Page_PreRender(object sender, EventArgs e)
         {
-          
-            var item = DatabaseProvider.MasterDatabase.GetItem(Common.GetRootPath() +"/"+ lblContentItemName.Text);
-            lblHeading.Text = item.Name;
-            lblItemName.Text = item.DisplayName;
-            lblTemplateName.Text = item.TemplateName;
-
-            if (item != null)
+            try
             {
-                // Get Fields directly from the Item
-                //----Item Fields
-                List<string> fieldNames = new List<string>();
-                item.Fields.ReadAll();
-                FieldCollection fieldCollection = item.Fields;
-                foreach (Field field in fieldCollection)
+                lblError.InnerText = "All good!";
+                   var item = DatabaseProvider.MasterDatabase.GetItem(Common.GetRootPath() + "/" + lblContentItemName.Text);
+                lblHeading.Text = item.Name;
+                lblItemName.Text = item.DisplayName;
+                lblTemplateName.Text = item.TemplateName;
+
+                if (item != null)
                 {
-                    if (!field.Name.StartsWith("__"))
+                    // Get Fields directly from the Item
+                    //----Item Fields
+                    List<string> fieldNames = new List<string>();
+                    item.Fields.ReadAll();
+                    FieldCollection fieldCollection = item.Fields;
+                    foreach (Field field in fieldCollection)
                     {
-                        CreateThreeColumnTable(tblFields, field.Name, field.Type, field.Section);
-                    }
-                }
-
-
-                //----Layout Details                   
-                 CreateThreeColumnTable(tblLayout, GetLayout(item,"default").ID.ToString(), GetLayout(item, "default").Name, "Default");
-
-
-                //----Presentation
-                foreach (RenderingReference rendering in GetRenderingReferences(item, "default"))
-                {
-                    CreateThreeColumnTable(tblPresentation, rendering.RenderingItem.Name, rendering.Placeholder, rendering.RenderingItem.DataSource);
-                }
-
-
-                //-----Data Template
-                CreateThreeColumnTable(tblDataTemplate, item.TemplateID.ToString(),item.TemplateName,item.Help?.Text);
-
-
-
-                int iter = 0;
-                //----Base Template Details
-                foreach (string baseTemplate in GetBaseTemplate(item))
-                {
-                    iter++;
-                    var baseTemplateName = DatabaseProvider.MasterDatabase.GetItem(new Sitecore.Data.ID(baseTemplate)).Name;
-                    CreateThreeColumnTable(tblTemplate, iter.ToString(), baseTemplate, baseTemplateName);
-
-                    Table tbl = new Table();
-                    var literalValue = new Literal();
-                    literalValue.Text = "<h4>" + baseTemplateName + "</h4>";
-                    var lblBaseTemplateName = new Label();
-                    lblBaseTemplateName.Text = baseTemplateName;
-                    var tableHeaderRow = new TableHeaderRow();
-                    var tableHeaderCell1 = new TableHeaderCell();
-                    var tableHeaderCell2 = new TableHeaderCell();
-                    var tableHeaderCell3 = new TableHeaderCell();
-                    var labelField1 = new Label();
-                    labelField1.Text = "Field Name";
-                    var labelField2 = new Label();
-                    labelField2.Text = "Field Type";
-                    var labelField3 = new Label();
-                    labelField3.Text = "Field Section";
-                    tableHeaderCell1.Controls.Add(labelField1);
-                    tableHeaderCell2.Controls.Add(labelField2);
-                    tableHeaderCell3.Controls.Add(labelField3);
-                    tableHeaderRow.Controls.Add(tableHeaderCell1);
-                    tableHeaderRow.Controls.Add(tableHeaderCell2);
-                    tableHeaderRow.Controls.Add(tableHeaderCell3);
-                    tbl.Controls.Add(tableHeaderRow);
-
-                    tbl.CssClass = "table table-bordered";
-                    foreach (var templateField in GetAllFields(baseTemplate))
-                    {
-                        if (!templateField.IsEmpty)
+                        if (!field.Name.StartsWith("__"))
                         {
-                            CreateThreeColumnTable(tbl, templateField.Name, templateField.Type, templateField.Section.Name);
-                        }                    
+                            CreateThreeColumnTable(tblFields, field.Name, field.Type, field.Section);
+                        }
                     }
-                    plhBaseTemplateFields.Controls.Add(literalValue);
-                    plhBaseTemplateFields.Controls.Add(tbl);
-                }
 
-                //-----Standard Values Rendering
-                foreach (RenderingReference rendering in GetStandardValueTemplate(item, "default"))
-                {
-                    CreateThreeColumnTable(tblStandardValues, rendering.RenderingItem.Name, rendering.Placeholder, rendering.RenderingItem.DataSource);
+
+                    //----Layout Details                   
+                    CreateThreeColumnTable(tblLayout, GetLayout(item, "default").ID.ToString(), GetLayout(item, "default").Name, "Default");
+
+
+                    //----Presentation
+                    foreach (RenderingReference rendering in GetRenderingReferences(item, "default"))
+                    {
+                        CreateThreeColumnTable(tblPresentation, rendering.RenderingItem.Name, rendering.Placeholder, rendering.RenderingItem.DataSource);
+                    }
+
+                    var renderings = GetRenderingReferences(item, "default").Select(p => p.RenderingItem.Name).ToArray();
+                    CreateOrderedListView(phRenderings, renderings);
+                    //-----Data Template
+                    CreateThreeColumnTable(tblDataTemplate, item.TemplateID.ToString(), item.TemplateName, item.Help?.Text);
+
+
+
+                    int iter = 0;
+                    var baseTemplates = GetBaseTemplate(item);
+                    //----Base Template Details
+
+                    var baseTempateNames = new string[baseTemplates.Count()];
+                    foreach (string baseTemplate in baseTemplates)
+                    {
+
+                        iter++;
+                        var baseTemplateName = DatabaseProvider.MasterDatabase.GetItem(new Sitecore.Data.ID(baseTemplate)).Name;
+                        CreateThreeColumnTable(tblTemplate, iter.ToString(), baseTemplate, baseTemplateName);
+                        baseTempateNames[iter - 1] = baseTemplateName;
+                        Table tbl = new Table();
+                        var literalValue = new Literal();
+                        literalValue.Text = "<h4>" + baseTemplateName + "</h4>";
+                        var lblBaseTemplateName = new Label();
+                        lblBaseTemplateName.Text = baseTemplateName;
+                        var tableHeaderRow = new TableHeaderRow();
+                        var tableHeaderCell1 = new TableHeaderCell();
+                        var tableHeaderCell2 = new TableHeaderCell();
+                        var tableHeaderCell3 = new TableHeaderCell();
+                        var labelField1 = new Label();
+                        labelField1.Text = "Field Name";
+                        var labelField2 = new Label();
+                        labelField2.Text = "Field Type";
+                        var labelField3 = new Label();
+                        labelField3.Text = "Field Section";
+                        tableHeaderCell1.Controls.Add(labelField1);
+                        tableHeaderCell2.Controls.Add(labelField2);
+                        tableHeaderCell3.Controls.Add(labelField3);
+                        tableHeaderRow.Controls.Add(tableHeaderCell1);
+                        tableHeaderRow.Controls.Add(tableHeaderCell2);
+                        tableHeaderRow.Controls.Add(tableHeaderCell3);
+                        tbl.Controls.Add(tableHeaderRow);
+
+                        tbl.CssClass = "table table-bordered";
+                        foreach (var templateField in GetAllFields(baseTemplate))
+                        {
+                            if (!templateField.IsEmpty)
+                            {
+                                CreateThreeColumnTable(tbl, templateField.Name, templateField.Type, templateField.Section.Name);
+                            }
+                        }
+                        plhBaseTemplateFields.Controls.Add(literalValue);
+                        plhBaseTemplateFields.Controls.Add(tbl);
+                    }
+
+                    //-----Standard Values Rendering
+                    foreach (RenderingReference rendering in GetStandardValueTemplate(item, "default"))
+                    {
+                        CreateThreeColumnTable(tblStandardValues, rendering.RenderingItem.Name, rendering.Placeholder, rendering.RenderingItem.DataSource);
+                    }
+                    CreateOrderedListView(phBaseTemplate, baseTempateNames);
                 }
+            }
+            catch(Exception ex)
+            {
+              
+                lblError.InnerText= "This Item got some problem..something is broken , need a fix.";
+            }
+
+        }
+        
+        private void CreateOrderedListView(PlaceHolder ph,string[] collection)
+        {
+    
+            foreach (var item in collection)
+            {
+                HtmlGenericControl li = new HtmlGenericControl("li");
+                li.InnerText = item;
+                ph.Controls.Add(li);
             }
         }
         private void CreateThreeColumnTable(Table tbl, string valueA, string valueB, string valueC)

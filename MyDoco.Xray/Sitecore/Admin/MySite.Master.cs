@@ -34,7 +34,6 @@ namespace MyDoco
             {               
                 lbl.Text = uxTreeView.SelectedNode.ValuePath;
                 ((Label)ContentPlaceHolder1.FindControl("lblContentItemName")).Text= uxTreeView.SelectedNode.ValuePath;
-                Session["YourKey"] = uxTreeView.SelectedNode.ValuePath;
             }
             else
             {
