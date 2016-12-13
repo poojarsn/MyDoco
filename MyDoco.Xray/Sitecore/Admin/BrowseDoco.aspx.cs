@@ -18,6 +18,7 @@ namespace MyDoco
         {
           
             var item = DatabaseProvider.MasterDatabase.GetItem(Common.GetRootPath() +"/"+ lblContentItemName.Text);
+            lblHeading.Text = item.Name;
             lblItemName.Text = item.DisplayName;
             lblTemplateName.Text = item.TemplateName;
 
